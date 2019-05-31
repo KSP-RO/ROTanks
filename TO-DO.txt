@@ -1,3 +1,1 @@
-* Add Soyuz tanks using Soyuz adapter models
-	* Allow for vertical stretching
 * Truly Spherical Tanks
