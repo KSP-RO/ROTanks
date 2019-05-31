@@ -27,11 +27,11 @@ namespace ROTanks
     /// 5.) Call updateSelections
     /// </summary>
     /// <typeparam name="U"></typeparam>
-    public class ModelModule<U> where U : PartModule
+    public class ROTModelModule<U> where U : PartModule
     {
 
         #region REGION - Delegate Signatures
-        public delegate ModelModule<U> SymmetryModule(U m);
+        public delegate ROTModelModule<U> SymmetryModule(U m);
         public delegate ModelDefinitionLayoutOptions[] ValidOptions();
         #endregion ENDREGION - Delegate Signatures
 
@@ -93,7 +93,7 @@ namespace ROTanks
         /// <summary>
         /// The -current- model definition.  Cached local access to the def stored in the current layout option.
         /// </summary>
-        private ModelDefinition currentDefinition;
+        private ROTModelDefinition currentDefinition;
 
         /// <summary>
         /// The -current- model layout in use.  Initialized during setupModels() call, and should always be valid after that point.
@@ -206,7 +206,7 @@ namespace ROTanks
         /// <summary>
         /// Return the currently 'active' model definition.
         /// </summary>
-        public ModelDefinition definition { get { return currentDefinition; } }
+        public ROTModelDefinition definition { get { return currentDefinition; } }
 
         /// <summary>
         /// Return the currently active texture set from the currently active model definition.
@@ -386,7 +386,7 @@ namespace ROTanks
         /// <param name="dataFieldName"></param>
         /// <param name="modelFieldName"></param>
         /// <param name="textureFieldName"></param>
-        public ModelModule(Part part, U partModule, Transform root, ModelOrientation orientation,
+        public ROTModelModule(Part part, U partModule, Transform root, ModelOrientation orientation,
             string modelPersistenceFieldName, string layoutPersistenceFieldName, string texturePersistenceFieldName, string recolorPersistenceFieldName)
         {
             this.part = part;
@@ -1249,7 +1249,7 @@ namespace ROTanks
         /// Internal utility method to allow accessing of symmetry ModelModules' in symmetry parts/part-modules
         /// </summary>
         /// <param name="action"></param>
-        private void actionWithSymmetry(Action<ModelModule<U>> action)
+        private void actionWithSymmetry(Action<ROTModelModule<U>> action)
         {
             action(this);
             int index = part.Modules.IndexOf(partModule);
@@ -1322,7 +1322,7 @@ namespace ROTanks
         /// <param name="def"></param>
         /// <param name="otherModelOrientation"></param>
         /// <returns></returns>
-        public bool isValidUpper(ModelDefinition def, ModelOrientation otherModelOrientation)
+        public bool isValidUpper(ROTModelDefinition def, ModelOrientation otherModelOrientation)
         {
             return definition.isValidUpperProfile(def.getLowerProfiles(otherModelOrientation), orientation);
         }
@@ -1332,7 +1332,7 @@ namespace ROTanks
         /// </summary>
         /// <param name="module"></param>
         /// <returns></returns>
-        public bool isValidUpper(ModelModule<U> module)
+        public bool isValidUpper(ROTModelModule<U> module)
         {
             return isValidUpper(module.definition, module.orientation);
         }
@@ -1343,7 +1343,7 @@ namespace ROTanks
         /// <param name="def"></param>
         /// <param name="otherModelOrientation"></param>
         /// <returns></returns>
-        public bool isValidLower(ModelDefinition def, ModelOrientation otherModelOrientation)
+        public bool isValidLower(ROTModelDefinition def, ModelOrientation otherModelOrientation)
         {
             return definition.isValidLowerProfile(def.getUpperProfiles(otherModelOrientation), orientation);
         }
@@ -1353,7 +1353,7 @@ namespace ROTanks
         /// </summary>
         /// <param name="module"></param>
         /// <returns></returns>
-        public bool isValidLower(ModelModule<U> module)
+        public bool isValidLower(ROTModelModule<U> module)
         {
             return isValidLower(module.definition, module.orientation);
         }
@@ -1363,7 +1363,7 @@ namespace ROTanks
         /// </summary>
         /// <param name="module"></param>
         /// <returns></returns>
-        public ModelDefinition findFirstValidUpper(ModelModule<U> module)
+        public ROTModelDefinition findFirstValidUpper(ROTModelModule<U> module)
         {
             int len = module.optionsCache.Length;
             for (int i = 0; i < len; i++)
@@ -1382,7 +1382,7 @@ namespace ROTanks
         /// </summary>
         /// <param name="module"></param>
         /// <returns></returns>
-        public ModelDefinition findFirstValidLower(ModelModule<U> module)
+        public ROTModelDefinition findFirstValidLower(ROTModelModule<U> module)
         {
             int len = module.optionsCache.Length;
             for (int i = 0; i < len; i++)

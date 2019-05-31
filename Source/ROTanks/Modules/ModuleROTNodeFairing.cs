@@ -196,7 +196,7 @@ namespace ROTanks
         /// <summary>
         /// If not null, will be applied during initialization or late update tick
         /// </summary>
-        private FairingUpdateData externalUpdateData = null;
+        private ROTFairingUpdateData externalUpdateData = null;
 
         //private vars set from examining the individual fairing sections; these basically control gui enabled/disabled status
         private bool enableBottomDiameterControls;
@@ -517,12 +517,12 @@ namespace ROTanks
 
         #region REGION - external interaction methods
 
-        public void updateExternal(FairingUpdateData data)
+        public void updateExternal(ROTFairingUpdateData data)
         {
             externalUpdateData = data;
         }
 
-        private void updateFromExternalData(FairingUpdateData eData)
+        private void updateFromExternalData(ROTFairingUpdateData eData)
         {
             //MonoBehaviour.print("Updating fairing from external interaction ");
             if (fairingParts == null)
@@ -969,7 +969,7 @@ namespace ROTanks
                         useBottom = nodeName == "bottom";
                     }
                     int len = fairingParts.Length;
-                    FairingData fp;
+                    ROTFairingData fp;
                     for (int i = 0; i < len; i++)
                     {
                         fp = fairingParts[i];
@@ -1003,14 +1003,14 @@ namespace ROTanks
         private void updateOpacity()
         {
             float opacity = editorTransparency && HighLogic.LoadedSceneIsEditor ? 0.25f : 1f;
-            foreach (FairingData fd in fairingParts) { fd.fairingBase.setOpacity(opacity); }
+            foreach (ROTFairingData fd in fairingParts) { fd.fairingBase.setOpacity(opacity); }
         }
 
         #endregion
 
     }
 
-    public class ROTNodeFairingData : FairingData
+    public class ROTNodeFairingData : ROTFairingData
     {
         public void loadPersistence(String data)
         {
@@ -1027,7 +1027,7 @@ namespace ROTanks
         }
     }
     
-    public class FairingUpdateData
+    public class ROTFairingUpdateData
     {
         public bool enable;
         public float topY;
@@ -1039,7 +1039,7 @@ namespace ROTanks
         public bool hasBottomY;
         public bool hasTopRad;
         public bool hasBottomRad;
-        public FairingUpdateData() { }
+        public ROTFairingUpdateData() { }
         public void setTopY(float val) { topY = val; hasTopY = true; }
         public void setBottomY(float val) { bottomY = val; hasBottomY = true; }
         public void setTopRadius(float val) { topRadius = val;  hasTopRad = true; }

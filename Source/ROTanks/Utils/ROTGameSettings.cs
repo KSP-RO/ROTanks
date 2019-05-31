@@ -29,6 +29,25 @@ namespace ROTanks
             }
         }
 
+        public override void SetDifficultyPreset(GameParameters.Preset preset)
+        {
+            switch (preset)
+            {
+                case GameParameters.Preset.Easy:
+                    break;
+                case GameParameters.Preset.Normal:
+                    break;
+                case GameParameters.Preset.Moderate:
+                    break;
+                case GameParameters.Preset.Hard:
+                    break;
+                case GameParameters.Preset.Custom:
+                    break;
+                default:
+                    break;
+            }
+        }
+
         public static bool persistRecolor()
         {
             if (HighLogic.CurrentGame != null)

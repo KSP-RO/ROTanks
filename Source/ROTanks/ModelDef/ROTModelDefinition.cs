@@ -14,7 +14,7 @@ namespace ROTanks
     /// Includes height, volume, mass, cost, tech-limitations, attach-node positions, 
     /// texture-set data, and whether the model is intended for top, center, or bottom stack mounting.
     /// </summary>
-    public class ModelDefinition
+    public class ROTModelDefinition
     {
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace ROTanks
         /// All data constructs MUST conform to the expected format (see documentation), or things will not load properly and the model will likely not work as expected.
         /// </summary>
         /// <param name="node"></param>
-        public ModelDefinition(ConfigNode node)
+        public ROTModelDefinition(ConfigNode node)
         {
             //load basic model definition values -- data that pertains to every model definition regardless of end-use.
             configNode = node;
@@ -1314,13 +1314,13 @@ namespace ROTanks
             }
         }
 
-        public void setHeightExplicit(ModelDefinition def, GameObject root, float dScale, float height, ModelOrientation orientation)
+        public void setHeightExplicit(ROTModelDefinition def, GameObject root, float dScale, float height, ModelOrientation orientation)
         {
             float vScale = height / def.height;
             setHeightFromScale(def, root, dScale, vScale, orientation);
         }
 
-        public void setHeightFromScale(ModelDefinition def, GameObject root, float dScale, float vScale, ModelOrientation orientation)
+        public void setHeightFromScale(ROTModelDefinition def, GameObject root, float dScale, float vScale, ModelOrientation orientation)
         {
             float desiredHeight = def.height * vScale;
             float staticHeight = getStaticHeight() * dScale;

@@ -8,7 +8,7 @@ namespace ROTanks
     /// <summary>
     /// Generic procedural fairing container
     /// </summary>
-    public class FairingContainer
+    public class ROTFairingContainer
     {
         public readonly int faces;
 
@@ -30,7 +30,7 @@ namespace ROTanks
         public bool generateColliders = false;
         public int facesPerCollider = 1;
 
-        public FairingContainer(GameObject root, int cylinderFaces, int numberOfPanels, float thickness)
+        public ROTFairingContainer(GameObject root, int cylinderFaces, int numberOfPanels, float thickness)
         {
             this.rootObject = root;
             this.faces = cylinderFaces;

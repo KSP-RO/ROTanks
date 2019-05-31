@@ -8,7 +8,7 @@ using static ROTanks.ROTLog;
 namespace ROTanks
 {
 
-    public static class ModelLayout
+    public static class ROTModelLayout
     {
 
         private static Dictionary<string, ModelLayoutData> layouts = new Dictionary<string, ModelLayoutData>();
@@ -172,21 +172,21 @@ namespace ROTanks
     public class ModelDefinitionLayoutOptions
     {
 
-        public readonly ModelDefinition definition;
+        public readonly ROTModelDefinition definition;
         public readonly ModelLayoutData[] layouts;
 
-        public ModelDefinitionLayoutOptions(ModelDefinition def)
+        public ModelDefinitionLayoutOptions(ROTModelDefinition def)
         {
             definition = def;
             if (definition == null) { error("Model definition was null when creating model layout options!"); }
-            layouts = ModelLayout.findLayouts(new string[] { "default" });
+            layouts = ROTModelLayout.findLayouts(new string[] { "default" });
             if (this.layouts == null || this.layouts.Length < 1)
             {
                 throw new InvalidOperationException("ERROR: No valid layout data specified.");
             }
         }
 
-        public ModelDefinitionLayoutOptions(ModelDefinition def, ModelLayoutData[] layouts)
+        public ModelDefinitionLayoutOptions(ROTModelDefinition def, ModelLayoutData[] layouts)
         {
             this.definition = def;
             if (definition == null) { error("Model definition was null when creating model layout options!"); }

@@ -205,9 +205,9 @@ namespace ROTanks
         private string[] mountNodeNames;
 
         //Main module slots for nose/core/mount
-        private ModelModule<ModuleROTank> noseModule;
-        private ModelModule<ModuleROTank> coreModule;
-        private ModelModule<ModuleROTank> mountModule;
+        private ROTModelModule<ModuleROTank> noseModule;
+        private ROTModelModule<ModuleROTank> coreModule;
+        private ROTModelModule<ModuleROTank> mountModule;
 
         /// <summary>
         /// Mapping of all of the variant sets available for this part.  When variant list length > 0, an additional 'variant' UI slider is added to allow for switching between variants.
@@ -428,17 +428,17 @@ namespace ROTanks
             ModelDefinitionLayoutOptions[] noseDefs = ROTModelData.getModelDefinitions(node.GetNodes("NOSE"));
             ModelDefinitionLayoutOptions[] mountDefs = ROTModelData.getModelDefinitions(node.GetNodes("MOUNT"));
 
-            noseModule = new ModelModule<ModuleROTank>(part, this, getRootTransform("ModularPart-NOSE"), ModelOrientation.TOP, nameof(currentNose), null, nameof(currentNoseTexture), nameof(noseModulePersistentData));
+            noseModule = new ROTModelModule<ModuleROTank>(part, this, getRootTransform("ModularPart-NOSE"), ModelOrientation.TOP, nameof(currentNose), null, nameof(currentNoseTexture), nameof(noseModulePersistentData));
             noseModule.name = "ModuleROTank-Nose";
             noseModule.getSymmetryModule = m => m.noseModule;
             noseModule.getValidOptions = () => noseDefs;
 
-            coreModule = new ModelModule<ModuleROTank>(part, this, getRootTransform("ModularPart-CORE"), ModelOrientation.CENTRAL, nameof(currentCore), null, nameof(currentCoreTexture), nameof(coreModulePersistentData));
+            coreModule = new ROTModelModule<ModuleROTank>(part, this, getRootTransform("ModularPart-CORE"), ModelOrientation.CENTRAL, nameof(currentCore), null, nameof(currentCoreTexture), nameof(coreModulePersistentData));
             coreModule.name = "ModuleROTank-Core";
             coreModule.getSymmetryModule = m => m.coreModule;
             coreModule.getValidOptions = () => getVariantSet(currentVariant).definitions;
 
-            mountModule = new ModelModule<ModuleROTank>(part, this, getRootTransform("ModularPart-MOUNT"), ModelOrientation.BOTTOM, nameof(currentMount), null, nameof(currentMountTexture), nameof(mountModulePersistentData));
+            mountModule = new ROTModelModule<ModuleROTank>(part, this, getRootTransform("ModularPart-MOUNT"), ModelOrientation.BOTTOM, nameof(currentMount), null, nameof(currentMountTexture), nameof(mountModulePersistentData));
             mountModule.name = "ModuleROTank-Mount";
             mountModule.getSymmetryModule = m => m.mountModule;
             mountModule.getValidOptions = () => mountDefs;
@@ -709,7 +709,7 @@ namespace ROTanks
                 ModuleROTNodeFairing coreFairing = modules[centralFairingIndex];
                 float top = coreModule.fairingTop;
                 float bot = coreModule.fairingBottom;
-                FairingUpdateData data = new FairingUpdateData();
+                ROTFairingUpdateData data = new ROTFairingUpdateData();
                 data.setTopY(top);
                 data.setTopRadius(currentDiameter * 0.5f);
                 data.setBottomY(bot);
@@ -719,11 +719,11 @@ namespace ROTanks
             }
             if (topFairingIndex >= 0 && topFairingIndex < modules.Length)
             {
-                ModelModule<ModuleROTank> moduleForUpperFiaring = getUpperFairingModelModule();
+                ROTModelModule<ModuleROTank> moduleForUpperFiaring = getUpperFairingModelModule();
                 bool enabled = moduleForUpperFiaring.fairingEnabled;
                 ModuleROTNodeFairing topFairing = modules[topFairingIndex];
                 float topFairingBottomY = moduleForUpperFiaring.fairingBottom;
-                FairingUpdateData data = new FairingUpdateData();
+                ROTFairingUpdateData data = new ROTFairingUpdateData();
                 data.setTopY(getPartTopY());
                 data.setBottomY(topFairingBottomY);
                 data.setBottomRadius(currentDiameter * 0.5f);
@@ -733,11 +733,11 @@ namespace ROTanks
             }
             if (bottomFairingIndex >= 0 && bottomFairingIndex < modules.Length)
             {
-                ModelModule<ModuleROTank> moduleForLowerFairing = getLowerFairingModelModule();
+                ROTModelModule<ModuleROTank> moduleForLowerFairing = getLowerFairingModelModule();
                 bool enabled = moduleForLowerFairing.fairingEnabled;
                 ModuleROTNodeFairing bottomFairing = modules[bottomFairingIndex];
                 float bottomFairingTopY = moduleForLowerFairing.fairingTop;
-                FairingUpdateData data = new FairingUpdateData();
+                ROTFairingUpdateData data = new ROTFairingUpdateData();
                 data.setTopRadius(currentDiameter * 0.5f);
                 data.setTopY(bottomFairingTopY);
                 data.setEnable(enabled);
@@ -778,7 +778,7 @@ namespace ROTanks
         /// Return the ModelModule slot responsible for upper attach point of lower fairing module
         /// </summary>
         /// <returns></returns>
-        private ModelModule<ModuleROTank> getLowerFairingModelModule()
+        private ROTModelModule<ModuleROTank> getLowerFairingModelModule()
         {
             float coreBaseDiam = coreModule.moduleDiameter;
             if (coreModule.moduleLowerDiameter < coreBaseDiam) { return coreModule; }
@@ -789,7 +789,7 @@ namespace ROTanks
         /// Return the ModelModule slot responsible for lower attach point of the upper fairing module
         /// </summary>
         /// <returns></returns>
-        private ModelModule<ModuleROTank> getUpperFairingModelModule()
+        private ROTModelModule<ModuleROTank> getUpperFairingModelModule()
         {
             float coreBaseDiam = coreModule.moduleDiameter;
             if (coreModule.moduleUpperDiameter < coreBaseDiam) { return coreModule; }
@@ -839,7 +839,7 @@ namespace ROTanks
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        private ModelModule<ModuleROTank> getModuleByName(string name)
+        private ROTModelModule<ModuleROTank> getModuleByName(string name)
         {
             switch (name)
             {

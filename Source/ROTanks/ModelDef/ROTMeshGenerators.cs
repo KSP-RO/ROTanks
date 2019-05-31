@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ROTanks
 {
 
-    public class CylinderMeshGenerator
+    public class ROTCylinderMeshGenerator
     {
         private Vector3 offset = Vector3.zero;
         private float height;
@@ -19,7 +19,7 @@ namespace ROTanks
         public UVArea topUV = new UVArea(0.00390625f, 0.00390625f, 0.99609375f, 0.99609375f);
         public UVArea bottomUV = new UVArea(0.00390625f, 0.00390625f, 0.99609375f, 0.99609375f);
 
-        public CylinderMeshGenerator(Vector3 offset, int faces, float height, float bottomRadius, float topRadius, float bottomInnerRadius, float topInnerRadius)
+        public ROTCylinderMeshGenerator(Vector3 offset, int faces, float height, float bottomRadius, float topRadius, float bottomInnerRadius, float topInnerRadius)
         {
             this.offset = offset;
             this.faces = faces;
@@ -32,7 +32,7 @@ namespace ROTanks
 
         public Mesh generateMesh()
         {
-            MeshBuilder builder = new MeshBuilder();
+            ROTMeshBuilder builder = new ROTMeshBuilder();
             Arc bottomOuterArc = new Arc(bottomRadius, 0, 0, 360, faces);
             Arc topOuterArc = new Arc(topRadius, height, 0, 360, faces);
             List<Vertex> verts1 = bottomOuterArc.generateVertices(builder, offset, outsideUV, outsideUV.v1, 1, 0);
@@ -71,7 +71,7 @@ namespace ROTanks
             Mesh mesh;
             MeshFilter mf;
             MeshCollider mc;
-            MeshBuilder builder = new MeshBuilder();
+            ROTMeshBuilder builder = new ROTMeshBuilder();
             
             GameObject collider;
             for (int i = 0; i < faces; i++)
@@ -266,7 +266,7 @@ namespace ROTanks
             length = circumference * percentageOfCircumference;
         }
 
-        public List<Vertex> generateVertices(MeshBuilder builder, Vector3 offset, UVArea area, float v, float yCos, float ySin)
+        public List<Vertex> generateVertices(ROTMeshBuilder builder, Vector3 offset, UVArea area, float v, float yCos, float ySin)
         {
             List<Vertex> vertices = builder.generateRadialVerticesFlatUVs(offset, faces, radius, height, startAngle, endAngle, v, area, yCos, ySin);            
             startVector = vertices[0].vertex;
@@ -337,7 +337,7 @@ namespace ROTanks
             //MeshRenderer mr;
             MeshCollider mc;
             thickness = outerArcs[0].radius - innerArcs[0].radius;
-            MeshBuilder builder = new MeshBuilder();
+            ROTMeshBuilder builder = new ROTMeshBuilder();
             int colliderIndex = 0;
             for (int i = 0; i < localFaces; i++)
             {
@@ -368,7 +368,7 @@ namespace ROTanks
         public Mesh generatePanels(Vector3 pos, UVArea outer, UVArea inner, UVArea caps)
         {
             int len = outerArcs.Count;
-            MeshBuilder builder = new MeshBuilder();
+            ROTMeshBuilder builder = new ROTMeshBuilder();
 
             for (int i = 0; i < len - 1; i++)
             {
@@ -386,7 +386,7 @@ namespace ROTanks
             return builder.buildMesh();
         }
                 
-        private void generatePanelSegment(MeshBuilder builder, Vector3 pos, Arc arcA, Arc arcB, UVArea area, bool invertFaces, bool invertNormalY, bool invertNormalXZ)
+        private void generatePanelSegment(ROTMeshBuilder builder, Vector3 pos, Arc arcA, Arc arcB, UVArea area, bool invertFaces, bool invertNormalY, bool invertNormalXZ)
         {
             float heightDiff = arcB.height - arcA.height;
             float offset = arcA.radius - arcB.radius;
@@ -402,7 +402,7 @@ namespace ROTanks
             builder.generateQuads(verts1, verts2, invertFaces);
         }
 
-        private void generateSidewalls(MeshBuilder builder, UVArea caps)
+        private void generateSidewalls(ROTMeshBuilder builder, UVArea caps)
         {
             int len = outerArcs.Count;
             float[] distances = new float[len];

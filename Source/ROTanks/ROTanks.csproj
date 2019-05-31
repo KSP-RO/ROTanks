@@ -55,14 +55,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ModelDef\FairingContainer.cs" />
-    <Compile Include="ModelDef\FairingData.cs" />
-    <Compile Include="ModelDef\MeshBuilder.cs" />
-    <Compile Include="ModelDef\MeshGenerators.cs" />
-    <Compile Include="ModelDef\ModelLayout.cs" />
-    <Compile Include="ModelDef\ModelModule.cs" />
+    <Compile Include="ModelDef\ROTFairingContainer.cs" />
+    <Compile Include="ModelDef\ROTFairingData.cs" />
+    <Compile Include="ModelDef\ROTMeshBuilder.cs" />
+    <Compile Include="ModelDef\ROTMeshGenerators.cs" />
+    <Compile Include="ModelDef\ROTModelLayout.cs" />
+    <Compile Include="ModelDef\ROTModelModule.cs" />
     <Compile Include="ModelDef\ROTModelData.cs" />
-    <Compile Include="ModelDef\ModelDefinition.cs" />
+    <Compile Include="ModelDef\ROTModelDefinition.cs" />
     <Compile Include="Modules\ModuleROTSelectableNodes.cs" />
     <Compile Include="Modules\ModuleROTNodeFairing.cs" />
     <Compile Include="Modules\ModuleROTAirstreamShield.cs" />

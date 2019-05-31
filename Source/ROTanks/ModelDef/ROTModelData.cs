@@ -12,7 +12,7 @@ namespace ROTanks
     /// </summary>
     public static class ROTModelData
     {
-        private static Dictionary<String, ModelDefinition> baseModelData = new Dictionary<String, ModelDefinition>();
+        private static Dictionary<String, ROTModelDefinition> baseModelData = new Dictionary<String, ROTModelDefinition>();
         private static bool defsLoaded = false;
 
         private static void loadDefs()
@@ -20,10 +20,10 @@ namespace ROTanks
             if (defsLoaded) { return; }
             defsLoaded = true;
             ConfigNode[] modelDatas = GameDatabase.Instance.GetConfigNodes("ROT_MODEL");
-            ModelDefinition data;
+            ROTModelDefinition data;
             foreach (ConfigNode node in modelDatas)
             {
-                data = new ModelDefinition(node);
+                data = new ROTModelDefinition(node);
                 log("Loading model definition data for name: " + data.name + " with model URL: " + data.modelName);
                 if (baseModelData.ContainsKey(data.name))
                 {
@@ -46,10 +46,10 @@ namespace ROTanks
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static ModelDefinition getModelDefinition(String name)
+        public static ROTModelDefinition getModelDefinition(String name)
         {
             if (!defsLoaded) { loadDefs(); }
-            ModelDefinition data = null;
+            ROTModelDefinition data = null;
             baseModelData.TryGetValue(name, out data);
             return data;
         }
@@ -59,13 +59,13 @@ namespace ROTanks
         /// </summary>
         /// <param name="names"></param>
         /// <returns></returns>
-        public static ModelDefinition[] getModelDefinitions(string[] names)
+        public static ROTModelDefinition[] getModelDefinitions(string[] names)
         {
-            List<ModelDefinition> defs = new List<ModelDefinition>();
+            List<ROTModelDefinition> defs = new List<ROTModelDefinition>();
             int len = names.Length;
             for (int i = 0; i < len; i++)
             {
-                ModelDefinition def = getModelDefinition(names[i]);
+                ROTModelDefinition def = getModelDefinition(names[i]);
                 if (def != null)
                 {
                     defs.AddUnique(def);
@@ -89,7 +89,7 @@ namespace ROTanks
             int len = names.Length;
             for (int i = 0; i < len; i++)
             {
-                ModelDefinition def = getModelDefinition(names[i]);
+                ROTModelDefinition def = getModelDefinition(names[i]);
                 if (def != null)
                 {
                     defs.Add(new ModelDefinitionLayoutOptions(def));
@@ -113,7 +113,7 @@ namespace ROTanks
 
             List<ModelDefinitionLayoutOptions> options = new List<ModelDefinitionLayoutOptions>();
             List<ModelLayoutData> layoutDataList = new List<ModelLayoutData>();
-            ModelDefinition def;
+            ROTModelDefinition def;
 
             string[] groupedNames;
             string[] groupedLayouts;
@@ -129,7 +129,7 @@ namespace ROTanks
                 for (int k = 0; k < len2; k++)
                 {
                     def = ROTModelData.getModelDefinition(groupedNames[k]);
-                    layoutDataList.AddRange(ModelLayout.findLayouts(groupedLayouts));
+                    layoutDataList.AddRange(ROTModelLayout.findLayouts(groupedLayouts));
                     if (nodes[i].HasValue("position") || nodes[i].HasValue("rotation") || nodes[i].HasValue("scale"))
                     {
                         Vector3 pos = nodes[i].GetVector3("position", Vector3.zero);

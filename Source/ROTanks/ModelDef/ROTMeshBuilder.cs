@@ -7,7 +7,7 @@ namespace ROTanks
     /// <summary>
     /// Generic mesh-building class; input each vert and triangle as created, it will take care of creating the actual mesh and calculating tangents
     /// </summary>
-    public class MeshBuilder
+    public class ROTMeshBuilder
     {
         private int vertexNumber = 0;
         private List<Vertex> vertices = new List<Vertex>();

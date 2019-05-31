@@ -3,11 +3,11 @@ using System;
 namespace ROTanks
 {
 
-    public class FairingData
+    public class ROTFairingData
     {
         //gameObject storage class
         //public FairingBase theFairing;
-        public FairingContainer fairingBase;
+        public ROTFairingContainer fairingBase;
         public String fairingName = "Fairing";
         public Vector3 rotationOffset = Vector3.zero;//default rotation offset is zero; must specify if custom rotation offset is to be used, not normally needed
         public float topY = 1;
@@ -35,7 +35,7 @@ namespace ROTanks
         //to be called on initial prefab part load; populate the instance with the default values from the input node
         public virtual void load(ConfigNode node, GameObject root)
         {
-            fairingBase = new FairingContainer(root, cylinderSides, numOfSections, wallThickness);
+            fairingBase = new ROTFairingContainer(root, cylinderSides, numOfSections, wallThickness);
             uvMapName = node.GetStringValue("uvMap", uvMapName);
             UVMap uvMap = UVMap.GetUVMapGlobal(uvMapName);
             fairingBase.outsideUV = uvMap.getArea("outside");

@@ -104,7 +104,7 @@ namespace ROTanks
             MonoBehaviour.print("Reloading config databases (fuel types, model data, etc...)");
             //FuelTypes.INSTANCE.loadConfigData();
             //VolumeContainerLoader.loadConfigData();//needs to be loaded after fuel types
-            ModelLayout.load();
+            ROTModelLayout.load();
             ROTModelData.loadConfigData();
         }
 
