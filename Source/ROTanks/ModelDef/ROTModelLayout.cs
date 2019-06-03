@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using static ROTanks.ROTLog;
 
@@ -19,7 +17,7 @@ namespace ROTanks
         {
             log("Loading Model Layouts");
             layouts.Clear();
-            ConfigNode[] layoutNodes = GameDatabase.Instance.GetConfigNodes("MODEL_LAYOUT");
+            ConfigNode[] layoutNodes = GameDatabase.Instance.GetConfigNodes("ROT_MODEL_LAYOUT");
             int len = layoutNodes.Length;
             for (int i = 0; i < len; i++)
             {
