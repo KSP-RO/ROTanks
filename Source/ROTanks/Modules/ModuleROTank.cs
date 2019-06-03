@@ -12,7 +12,7 @@ namespace ROTanks
     /// PartModule that manages multiple models/meshes and accompanying features for model switching - resources, modules, textures, recoloring.<para/>
     /// Includes 3 stack-mounted modules.  All modules support model-switching, texture-switching, recoloring.
     /// </summary>
-    public class ModuleROTank : PartModule, IPartCostModifier, IPartMassModifier, IRecolorable, IContainerVolumeContributor
+    public class ModuleROTank : PartModule, IRecolorable, IContainerVolumeContributor
     {
 
         #region REGION - Part Config Fields
@@ -36,16 +36,7 @@ namespace ROTanks
         public float volumeScalingPower = 3f;
 
         [KSPField]
-        public float massScalingPower = 3f;
-
-        [KSPField]
         public bool enableVScale = true;
-
-        [KSPField]
-        public bool useAdapterMass = true;
-
-        [KSPField]
-        public bool useAdapterCost = true;
 
         [KSPField]
         public int noseContainerIndex = 0;
@@ -186,16 +177,6 @@ namespace ROTanks
         private bool initialized = false;
 
         /// <summary>
-        /// The adjusted modified mass for this part.
-        /// </summary>
-        private float modifiedMass = -1;
-
-        /// <summary>
-        /// The adjusted modified cost for this part.
-        /// </summary>
-        private float modifiedCost = -1;
-
-        /// <summary>
         /// Previous diameter value, used for surface attach position updates.
         /// </summary>
         private float prevDiameter = -1;
@@ -259,6 +240,7 @@ namespace ROTanks
             base.OnStart(state);
             initialize();
             initializeUI();
+            updateDimensions();
         }
 
         //standard Unity lifecyle override
@@ -286,26 +268,6 @@ namespace ROTanks
         {
             //update available variants for attach node changes
             updateAvailableVariants();
-        }
-
-        //IPartMass/CostModifier override
-        public ModifierChangeWhen GetModuleMassChangeWhen() { return ModifierChangeWhen.CONSTANTLY; }
-
-        //IPartMass/CostModifier override
-        public ModifierChangeWhen GetModuleCostChangeWhen() { return ModifierChangeWhen.CONSTANTLY; }
-
-        //IPartMass/CostModifier override
-        public float GetModuleMass(float defaultMass, ModifierStagingSituation sit)
-        {
-            if (modifiedMass == -1) { return 0; }
-            return -defaultMass + modifiedMass;
-        }
-
-        //IPartMass/CostModifier override
-        public float GetModuleCost(float defaultCost, ModifierStagingSituation sit)
-        {
-            if (modifiedCost == -1) { return 0; }
-            return -defaultCost + modifiedCost;
         }
 
         //IRecolorable override
@@ -443,10 +405,6 @@ namespace ROTanks
             mountModule.getSymmetryModule = m => m.mountModule;
             mountModule.getValidOptions = () => mountDefs;
 
-            noseModule.massScalar = massScalingPower;
-            coreModule.massScalar = massScalingPower;
-            mountModule.massScalar = massScalingPower;
-
             noseModule.volumeScalar = volumeScalingPower;
             coreModule.volumeScalar = volumeScalingPower;
             mountModule.volumeScalar = volumeScalingPower;
@@ -460,7 +418,7 @@ namespace ROTanks
             mountModule.setupModel();
 
             updateModulePositions();
-            updateMassAndCost();
+            updateDimensions();
             updateAttachNodes(false);
             updateAvailableVariants();
             ROTStockInterop.updatePartHighlighting(part);
@@ -475,7 +433,7 @@ namespace ROTanks
             Action<ModuleROTank> modelChangedAction = (m) =>
             {
                 m.updateModulePositions();
-                m.updateMassAndCost();
+                m.updateDimensions();
                 m.updateAttachNodes(true);
                 m.updateFairing(true);
                 m.updateAvailableVariants();
@@ -609,25 +567,10 @@ namespace ROTanks
         }
 
         /// <summary>
-        /// Update the cached modifiedMass and modifiedCost field values.  Used with stock cost/mass modifier interface.<para/>
-        /// Optionally includes adapter mass/cost if enabled in config.
+        /// Updates all dimensions for the PAW and tooling.
         /// </summary>
-        private void updateMassAndCost()
+        private void updateDimensions()
         {
-            modifiedMass = coreModule.moduleMass;
-            if (useAdapterMass)
-            {
-                modifiedMass += noseModule.moduleMass;
-                modifiedMass += mountModule.moduleMass;
-            }
-
-            modifiedCost = coreModule.moduleCost;
-            if (useAdapterCost)
-            {
-                modifiedCost += noseModule.moduleCost;
-                modifiedCost += mountModule.moduleCost;
-            }
-
             float noseMaxDiam, mountMaxDiam = 0.0f;
             noseMaxDiam = Math.Max(noseModule.moduleLowerDiameter, noseModule.moduleUpperDiameter);
             ROTLog.debug("currentMount: " + currentMount);
