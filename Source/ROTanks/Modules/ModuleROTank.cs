@@ -616,7 +616,7 @@ namespace ROTanks
             AttachNode noseInterstage = part.FindAttachNode(noseInterstageNode);
             if (noseInterstage != null)
             {
-                ROTAttachNodeUtils.updateAttachNodePosition(part, noseInterstage, pos, Vector3.up, userInput);
+                ROTAttachNodeUtils.updateAttachNodePosition(part, noseInterstage, pos, Vector3.up, userInput, 1);
             }
 
             //update the nose interstage node, using the node position as specified by the nose module's fairing offset parameter
@@ -627,7 +627,7 @@ namespace ROTanks
             AttachNode mountInterstage = part.FindAttachNode(mountInterstageNode);
             if (mountInterstage != null)
             {
-                ROTAttachNodeUtils.updateAttachNodePosition(part, mountInterstage, pos, Vector3.down, userInput);
+                ROTAttachNodeUtils.updateAttachNodePosition(part, mountInterstage, pos, Vector3.down, userInput, 1);
             }
 
             //update surface attach node position, part position, and any surface attached children

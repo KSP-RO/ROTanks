@@ -835,7 +835,7 @@ namespace ROTanks
                     }
                     else//update its position
                     {
-                        ROTAttachNodeUtils.updateAttachNodePosition(part, node, pos, orient, userInput);
+                        ROTAttachNodeUtils.updateAttachNodePosition(part, node, pos, orient, userInput, size);
                     }
                 }
                 else//extra node, destroy
@@ -899,10 +899,11 @@ namespace ROTanks
             {
                 float currentDiameter = moduleDiameter;
                 float hScale = currentDiameter / definition.diameter;
+                int size = node.size;
                 AttachNodeBaseData surfNodeData = definition.surfaceNode;
                 Vector3 pos = surfNodeData.position * hScale;
                 Vector3 ori = surfNodeData.orientation;
-                ROTAttachNodeUtils.updateAttachNodePosition(part, node, pos, ori, userInput);
+                ROTAttachNodeUtils.updateAttachNodePosition(part, node, pos, ori, userInput, size);
                 ROTAttachNodeUtils.updateSurfaceAttachedChildren(part, prevDiameter, currentDiameter);
             }
         }
@@ -928,9 +929,9 @@ namespace ROTanks
                 pos.x = -pos.x;
                 ori.y = -ori.y;
             }
-            float size = currentHorizontalScale * data.size;
+            int size = Mathf.RoundToInt(data.size * currentHorizontalScale);
             pos.y += modulePosition + getPlacementOffset();
-            ROTAttachNodeUtils.updateAttachNodePosition(part, node, pos, ori, userInput);
+            ROTAttachNodeUtils.updateAttachNodePosition(part, node, pos, ori, userInput, size);
         }
 
         #endregion ENDREGION - Public/External methods

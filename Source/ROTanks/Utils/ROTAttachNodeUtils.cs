@@ -18,11 +18,12 @@ namespace ROTanks
         /// <param name="node"></param>
         /// <param name="newPos"></param>
         /// <param name="orientation"></param>
-        public static void updateAttachNodePosition(Part part, AttachNode node, Vector3 newPos, Vector3 orientation, bool updatePartPosition)
+        public static void updateAttachNodePosition(Part part, AttachNode node, Vector3 newPos, Vector3 orientation, bool updatePartPosition, int size)
         {
             Vector3 diff = newPos - node.position;
             node.position = node.originalPosition = newPos;
             node.orientation = node.originalOrientation = orientation;
+            node.size = size;
             if (updatePartPosition && node.attachedPart != null)
             {
                 Vector3 globalDiff = part.transform.TransformPoint(diff);
