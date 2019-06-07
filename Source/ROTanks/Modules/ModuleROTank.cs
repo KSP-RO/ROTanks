@@ -584,7 +584,7 @@ namespace ROTanks
 
             totalTankLength = getTotalHeight();
             ROTLog.debug("The Total Tank Length is: " + totalTankLength);
-            largestDiameter = Math.Max(noseMaxDiam, mountMaxDiam);
+            largestDiameter = Math.Max(currentDiameter, Math.Max(noseMaxDiam, mountMaxDiam));
         }
 
         /// <summary>
