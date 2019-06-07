@@ -63,6 +63,7 @@
     <Compile Include="ModelDef\ROTModelModule.cs" />
     <Compile Include="ModelDef\ROTModelData.cs" />
     <Compile Include="ModelDef\ROTModelDefinition.cs" />
+    <Compile Include="Modules\ModuleROTProbe.cs" />
     <Compile Include="Modules\ModuleROTSelectableNodes.cs" />
     <Compile Include="Modules\ModuleROTNodeFairing.cs" />
     <Compile Include="Modules\ModuleROTAirstreamShield.cs" />
