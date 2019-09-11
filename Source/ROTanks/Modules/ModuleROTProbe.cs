@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using KSPShaderTools;
+using ROLib;
 
 namespace ROTanks
 {
@@ -101,7 +101,7 @@ namespace ROTanks
         private float modifiedMass = -1;
         private float prevDiameter = -1;
         private string[] coreNodeNames;
-        private ROTModelModule<ModuleROTProbe> coreModule;
+        private ROLModelModule<ModuleROTProbe> coreModule;
 
         /// <summary>
         /// Mapping of all of the variant sets available for this part.  When variant list length > 0, an additional 'variant' UI slider is added to allow for switching between variants.
@@ -244,10 +244,10 @@ namespace ROTanks
 
             prevDiameter = currentDiameter;
 
-            coreNodeNames = ROTUtils.parseCSV(coreManagedNodes);
+            coreNodeNames = ROLUtils.parseCSV(coreManagedNodes);
 
             //model-module setup/initialization
-            ConfigNode node = ROTConfigNodeUtils.parseConfigNode(configNodeData);
+            ConfigNode node = ROLConfigNodeUtils.parseConfigNode(configNodeData);
 
             //list of CORE model nodes from config
             //each one may contain multiple 'model=modelDefinitionName' entries
@@ -259,15 +259,15 @@ namespace ROTanks
             int coreDefLen = coreDefNodes.Length;
             for (int i = 0; i < coreDefLen; i++)
             {
-                string variantName = coreDefNodes[i].GetStringValue("variant", "Default");
-                coreDefs = ROTModelData.getModelDefinitionLayouts(coreDefNodes[i].GetStringValues("model"));
+                string variantName = coreDefNodes[i].ROLGetStringValue("variant", "Default");
+                coreDefs = ROLModelData.getModelDefinitionLayouts(coreDefNodes[i].ROLGetStringValues("model"));
                 coreDefList.AddUniqueRange(coreDefs);
                 ModelDefinitionVariantSet mdvs = getVariantSet(variantName);
                 mdvs.addModels(coreDefs);
             }
             coreDefs = coreDefList.ToArray();
 
-            coreModule = new ROTModelModule<ModuleROTProbe>(part, this, getRootTransform("ModularProbe-CORE"), ModelOrientation.CENTRAL, nameof(currentCore), null, nameof(currentCoreTexture), nameof(coreModulePersistentData));
+            coreModule = new ROLModelModule<ModuleROTProbe>(part, this, getRootTransform("ModularProbe-CORE"), ModelOrientation.CENTRAL, nameof(currentCore), null, nameof(currentCoreTexture), nameof(coreModulePersistentData));
             coreModule.name = "ModularProbe-Core";
             coreModule.getSymmetryModule = m => m.coreModule;
             coreModule.getValidOptions = () => getVariantSet(currentVariant).definitions;
@@ -283,7 +283,7 @@ namespace ROTanks
             updateMassAndDimensions();
             updateAttachNodes(false);
             updateAvailableVariants();
-            ROTStockInterop.updatePartHighlighting(part);
+            ROLStockInterop.updatePartHighlighting(part);
         }
 
         /// <summary>
@@ -299,12 +299,12 @@ namespace ROTanks
                 m.updateAttachNodes(true);
                 m.updateAvailableVariants();
                 m.updateDragCubes();
-                ROTModInterop.updateResourceVolume(m.part);
+                ROLModInterop.updateResourceVolume(m.part);
             };
 
             //set up the core variant UI control
-            string[] variantNames = ROTUtils.getNames(variantSets.Values, m => m.variantName);
-            this.updateUIChooseOptionControl(nameof(currentVariant), variantNames, variantNames, true, currentVariant);
+            string[] variantNames = ROLUtils.getNames(variantSets.Values, m => m.variantName);
+            this.ROLupdateUIChooseOptionControl(nameof(currentVariant), variantNames, variantNames, true, currentVariant);
             Fields[nameof(currentVariant)].guiActiveEditor = variantSets.Count > 1;
 
             Fields[nameof(currentVariant)].uiControlEditor.onFieldChanged = (a, b) =>
@@ -319,7 +319,7 @@ namespace ROTanks
                 //and a reference to the model from same index out of the new set ([] call does validation internally for IAOOBE)
                 ModelDefinitionLayoutOptions newCoreDef = mdvs[previousIndex];
                 //now, call model-selected on the core model to update for the changes, including symmetry counterpart updating.
-                this.actionWithSymmetry(m =>
+                this.ROLactionWithSymmetry(m =>
                 {
                     m.currentVariant = currentVariant;
                     m.coreModule.modelSelected(newCoreDef.definition.name);
@@ -329,30 +329,30 @@ namespace ROTanks
 
             Fields[nameof(currentDiameter)].uiControlEditor.onFieldChanged = (a, b) =>
             {
-                this.actionWithSymmetry(m =>
+                this.ROLactionWithSymmetry(m =>
                 {
                     if (m != this) { m.currentDiameter = this.currentDiameter; }
                     modelChangedAction(m);
                     m.prevDiameter = m.currentDiameter;
                 });
-                ROTStockInterop.fireEditorUpdate();
+                ROLStockInterop.fireEditorUpdate();
             };
 
             Fields[nameof(currentVScale)].uiControlEditor.onFieldChanged = (a, b) =>
             {
-                this.actionWithSymmetry(m =>
+                this.ROLactionWithSymmetry(m =>
                 {
                     if (m != this) { m.currentVScale = this.currentVScale; }
                     modelChangedAction(m);
                 });
-                ROTStockInterop.fireEditorUpdate();
+                ROLStockInterop.fireEditorUpdate();
             };
 
             Fields[nameof(currentCore)].uiControlEditor.onFieldChanged = (a, b) =>
             {
                 coreModule.modelSelected(a, b);
-                this.actionWithSymmetry(modelChangedAction);
-                ROTStockInterop.fireEditorUpdate();
+                this.ROLactionWithSymmetry(modelChangedAction);
+                ROLStockInterop.fireEditorUpdate();
             };
 
             //------------------MODEL DIAMETER SWITCH UI INIT---------------------//
@@ -362,18 +362,18 @@ namespace ROTanks
             }
             else
             {
-                this.updateUIFloatEditControl(nameof(currentDiameter), minDiameter, maxDiameter, diameterLargeStep, diameterSmallStep, diameterSlideStep, true, currentDiameter);
+                this.ROLupdateUIFloatEditControl(nameof(currentDiameter), minDiameter, maxDiameter, diameterLargeStep, diameterSmallStep, diameterSlideStep, true, currentDiameter);
             }
             Fields[nameof(currentVScale)].guiActiveEditor = enableVScale;
 
             //------------------AUX CONTAINER SWITCH UI INIT---------------------//
             Fields[nameof(auxContainerPercent)].uiControlEditor.onFieldChanged = (a, b) =>
             {
-                this.actionWithSymmetry(m =>
+                this.ROLactionWithSymmetry(m =>
                 {
                     if (m != this) { m.auxContainerPercent = this.auxContainerPercent; }
-                    ROTModInterop.updateResourceVolume(m.part);
-                    ROTStockInterop.fireEditorUpdate();
+                    ROLModInterop.updateResourceVolume(m.part);
+                    ROLStockInterop.fireEditorUpdate();
                 });
             };
             if (auxContainerMinPercent == auxContainerMaxPercent || auxContainerSourceIndex < 0 || auxContainerTargetIndex < 0)
@@ -382,7 +382,7 @@ namespace ROTanks
             }
             else
             {
-                this.updateUIFloatEditControl(nameof(auxContainerPercent), auxContainerMinPercent, auxContainerMaxPercent, 5f, 1f, 0.1f, false, auxContainerPercent);
+                this.ROLupdateUIFloatEditControl(nameof(auxContainerPercent), auxContainerMinPercent, auxContainerMaxPercent, 5f, 1f, 0.1f, false, auxContainerPercent);
             }
 
             //------------------MODULE TEXTURE SWITCH UI INIT---------------------//
@@ -392,6 +392,13 @@ namespace ROTanks
             {
                 GameEvents.onEditorShipModified.Add(new EventData<ShipConstruct>.OnEvent(onEditorVesselModified));
             }
+        }
+
+        public void updateAvionicsData()
+        {
+            PartModule avionicsData;
+            avionicsData = part.Modules["ProceduralAvionics"];
+            avionicsData.GetType().GetField("cachedVolume").SetValue(avionicsData, 1000.0f);
         }
 
         /// <summary>
@@ -485,7 +492,7 @@ namespace ROTanks
         /// </summary>
         private void updateDragCubes()
         {
-            ROTModInterop.onPartGeometryUpdate(part, true);
+            ROLModInterop.onPartGeometryUpdate(part, true);
         }
 
         /// <summary>
@@ -496,14 +503,14 @@ namespace ROTanks
         /// <returns></returns>
         private Transform getRootTransform(string name)
         {
-            Transform root = part.transform.FindRecursive(name);
+            Transform root = part.transform.ROLFindRecursive(name);
             if (root != null)
             {
                 GameObject.DestroyImmediate(root.gameObject);
                 root = null;
             }
             root = new GameObject(name).transform;
-            root.NestToParent(part.transform.FindRecursive("model"));
+            root.NestToParent(part.transform.ROLFindRecursive("model"));
             return root;
         }
 
@@ -512,7 +519,7 @@ namespace ROTanks
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        private ROTModelModule<ModuleROTProbe> getModuleByName(string name)
+        private ROLModelModule<ModuleROTProbe> getModuleByName(string name)
         {
             switch (name)
             {

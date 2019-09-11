@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
+using ROLib;
 using KSPShaderTools;
 
 namespace ROTanks
 {
 
+    // TODO: prevDiameter allows the surface attached parts to update, so I should make a prevHeight to allow the surface attached parts on the top and bottom to update as well.
     /// <summary>
     /// PartModule that manages multiple models/meshes and accompanying features for model switching - resources, modules, textures, recoloring.<para/>
     /// Includes 3 stack-mounted modules.  All modules support model-switching, texture-switching, recoloring.
     /// </summary>
-    public class ModuleROTank : PartModule, IRecolorable, IContainerVolumeContributor
+    public class ModuleROTank : PartModule, IContainerVolumeContributor
     {
-
-        #region REGION - Part Config Fields
+        #region KSPFields
 
         [KSPField]
         public float diameterLargeStep = 0.1f;
@@ -30,7 +30,7 @@ namespace ROTanks
         public float minDiameter = 0.1f;
 
         [KSPField]
-        public float maxDiameter = 50f;
+        public float maxDiameter = 5.0f;
 
         [KSPField]
         public float volumeScalingPower = 3f;
@@ -39,54 +39,38 @@ namespace ROTanks
         public bool enableVScale = true;
 
         [KSPField]
-        public int noseContainerIndex = 0;
+        public int coreContainerIndex = 0;
 
         [KSPField]
-        public int coreContainerIndex = 0;
+        public int noseContainerIndex = 0;
 
         [KSPField]
         public int mountContainerIndex = 0;
 
         [KSPField]
-        public int topFairingIndex = -1;
-
-        [KSPField]
-        public int centralFairingIndex = -1;
-
-        [KSPField]
-        public int bottomFairingIndex = -1;
+        public string coreManagedNodes = string.Empty;
 
         [KSPField]
         public string noseManagedNodes = string.Empty;
 
         [KSPField]
-        public string coreManagedNodes = string.Empty;
+        public string mountManagedNodes = string.Empty;
 
         [KSPField]
-        public string mountManagedNodes = string.Empty;
+        public string noseInterstageNode = "noseinterstage";
+
+        [KSPField]
+        public string mountInterstageNode = "mountinterstage";
 
         [KSPField]
         public float actualHeight = 0.0f;
 
-
         /// <summary>
-        /// Name of the 'interstage' node; positioned according to upper fairing lower spawn point
-        /// </summary>
-        [KSPField]
-        public string noseInterstageNode = "noseinterstage";
-
-        /// <summary>
-        /// Name of the 'interstage' node; positioned according to lower fairing upper spawn point
-        /// </summary>
-        [KSPField]
-        public string mountInterstageNode = "mountinterstage";
-
-        /// <summary>
-        /// This is the total length of the entire tank with the additional modules added.
+        /// This is the total length of the entire tank with the nose, core and mounts all considered.
         /// </summary>
         [KSPField(isPersistant = true, guiActiveEditor = true, guiActive = false, guiName = "Total Length", guiFormat = "F4", guiUnits = "m")]
         public float totalTankLength = 0.0f;
-        
+
         /// <summary>
         /// This is the largest diameter of the entire tank.
         /// </summary>
@@ -98,7 +82,7 @@ namespace ROTanks
         /// </summary>
         [KSPField(isPersistant = true, guiActiveEditor = true, guiActive = false, guiName = "Diameter", guiUnits = "m"),
          UI_FloatEdit(sigFigs = 4, suppressEditorShipModified = true)]
-        public float currentDiameter = 1.0f;    
+        public float currentDiameter = 1.0f;
 
         /// <summary>
         /// Adjustment to the vertical-scale of v-scale compatible models/module-slots.
@@ -107,13 +91,11 @@ namespace ROTanks
          UI_FloatEdit(sigFigs = 4, suppressEditorShipModified = true, minValue = -1, maxValue = 1, incrementLarge = 0.25f, incrementSmall = 0.05f, incrementSlide = 0.001f)]
         public float currentVScale = 0f;
 
-        #region REGION - Module persistent data fields
-
         //------------------------------------------MODEL SELECTION SET PERSISTENCE-----------------------------------------------//
 
         //non-persistent value; initialized to whatever the currently selected core model definition is at time of loading
         //allows for variant names to be updated in the part-config without breaking everything....
-        [KSPField(isPersistant =true, guiName = "Variant", guiActiveEditor = true, guiActive = false),
+        [KSPField(isPersistant = true, guiName = "Variant", guiActiveEditor = true, guiActive = false),
          UI_ChooseOption(suppressEditorShipModified = true)]
         public string currentVariant = "Default";
 
@@ -155,15 +137,13 @@ namespace ROTanks
         [KSPField(isPersistant = true)]
         public string mountModulePersistentData = string.Empty;
 
-        #endregion ENDREGION - Module persistent data fields
-
         //tracks if default textures and resource volumes have been initialized; only occurs once during the parts' first Start() call
         [KSPField(isPersistant = true)]
         public bool initializedDefaults = false;
 
-        #endregion REGION - Part Config Fields
+        #endregion KSPFields
 
-        #region REGION - Private working vars
+        #region Private Variables
 
         /// <summary>
         /// Standard work-around for lack of config-node data being passed consistently and lack of support for mod-added serializable classes.
@@ -186,9 +166,9 @@ namespace ROTanks
         private string[] mountNodeNames;
 
         //Main module slots for nose/core/mount
-        private ROTModelModule<ModuleROTank> noseModule;
-        private ROTModelModule<ModuleROTank> coreModule;
-        private ROTModelModule<ModuleROTank> mountModule;
+        private ROLModelModule<ModuleROTank> noseModule;
+        private ROLModelModule<ModuleROTank> coreModule;
+        private ROLModelModule<ModuleROTank> mountModule;
 
         /// <summary>
         /// Mapping of all of the variant sets available for this part.  When variant list length > 0, an additional 'variant' UI slider is added to allow for switching between variants.
@@ -222,11 +202,11 @@ namespace ROTanks
             return variantSets.Values.Where((a, b) => { return a.definitions.Contains(def); }).First();
         }
 
-        #endregion ENDREGION - Private working vars
+        #endregion Private Variables
 
-        #region REGION - Standard KSP Overrides
+        #region Standard KSP Overrides
 
-        //standard KSP lifecyle override
+        // Standard KSP lifecyle override
         public override void OnLoad(ConfigNode node)
         {
             base.OnLoad(node);
@@ -234,7 +214,7 @@ namespace ROTanks
             initialize();
         }
 
-        //standard KSP lifecyle override
+        // Standard KSP lifecyle override
         public override void OnStart(StartState state)
         {
             base.OnStart(state);
@@ -243,18 +223,14 @@ namespace ROTanks
             updateDimensions();
         }
 
-        //standard Unity lifecyle override
+        // Standard Unity lifecyle override
         public void Start()
         {
-            if (!initializedDefaults)
-            {
-                updateFairing(false);
-            }
             initializedDefaults = true;
             updateDragCubes();
         }
 
-        //standard Unity lifecyle override
+        // Standard Unity lifecyle override
         public void OnDestroy()
         {
             if (HighLogic.LoadedSceneIsEditor)
@@ -346,9 +322,9 @@ namespace ROTanks
             return new ContainerContribution(name, index, contVol);
         }
 
-        #endregion ENDREGION - Standard KSP Overrides
+        #endregion Standard KSP Overrides
 
-        #region REGION - Custom Update Methods
+        #region Custom Update Methods
 
         /// <summary>
         /// Initialization method.  Sets up model modules, loads their configs from the input config node.  Does all initial linking of part-modules.<para/>
@@ -361,12 +337,12 @@ namespace ROTanks
 
             prevDiameter = currentDiameter;
 
-            noseNodeNames = ROTUtils.parseCSV(noseManagedNodes);
-            coreNodeNames = ROTUtils.parseCSV(coreManagedNodes);
-            mountNodeNames = ROTUtils.parseCSV(mountManagedNodes);
+            noseNodeNames = ROLUtils.parseCSV(noseManagedNodes);
+            coreNodeNames = ROLUtils.parseCSV(coreManagedNodes);
+            mountNodeNames = ROLUtils.parseCSV(mountManagedNodes);
 
             //model-module setup/initialization
-            ConfigNode node = ROTConfigNodeUtils.parseConfigNode(configNodeData);
+            ConfigNode node = ROLConfigNodeUtils.parseConfigNode(configNodeData);
 
             //list of CORE model nodes from config
             //each one may contain multiple 'model=modelDefinitionName' entries
@@ -378,8 +354,8 @@ namespace ROTanks
             int coreDefLen = coreDefNodes.Length;
             for (int i = 0; i < coreDefLen; i++)
             {
-                string variantName = coreDefNodes[i].GetStringValue("variant", "Default");
-                coreDefs = ROTModelData.getModelDefinitionLayouts(coreDefNodes[i].GetStringValues("model"));
+                string variantName = coreDefNodes[i].ROLGetStringValue("variant", "Default");
+                coreDefs = ROLModelData.getModelDefinitionLayouts(coreDefNodes[i].ROLGetStringValues("model"));
                 coreDefList.AddUniqueRange(coreDefs);
                 ModelDefinitionVariantSet mdvs = getVariantSet(variantName);
                 mdvs.addModels(coreDefs);
@@ -387,20 +363,20 @@ namespace ROTanks
             coreDefs = coreDefList.ToArray();
 
             //model defs - brought here so we can capture the array rather than the config node+method call
-            ModelDefinitionLayoutOptions[] noseDefs = ROTModelData.getModelDefinitions(node.GetNodes("NOSE"));
-            ModelDefinitionLayoutOptions[] mountDefs = ROTModelData.getModelDefinitions(node.GetNodes("MOUNT"));
+            ModelDefinitionLayoutOptions[] noseDefs = ROLModelData.getModelDefinitions(node.GetNodes("NOSE"));
+            ModelDefinitionLayoutOptions[] mountDefs = ROLModelData.getModelDefinitions(node.GetNodes("MOUNT"));
 
-            noseModule = new ROTModelModule<ModuleROTank>(part, this, getRootTransform("ModularPart-NOSE"), ModelOrientation.TOP, nameof(currentNose), null, nameof(currentNoseTexture), nameof(noseModulePersistentData));
+            noseModule = new ROLModelModule<ModuleROTank>(part, this, getRootTransform("ModularPart-NOSE"), ModelOrientation.TOP, nameof(currentNose), null, nameof(currentNoseTexture), nameof(noseModulePersistentData));
             noseModule.name = "ModuleROTank-Nose";
             noseModule.getSymmetryModule = m => m.noseModule;
             noseModule.getValidOptions = () => noseDefs;
 
-            coreModule = new ROTModelModule<ModuleROTank>(part, this, getRootTransform("ModularPart-CORE"), ModelOrientation.CENTRAL, nameof(currentCore), null, nameof(currentCoreTexture), nameof(coreModulePersistentData));
+            coreModule = new ROLModelModule<ModuleROTank>(part, this, getRootTransform("ModularPart-CORE"), ModelOrientation.CENTRAL, nameof(currentCore), null, nameof(currentCoreTexture), nameof(coreModulePersistentData));
             coreModule.name = "ModuleROTank-Core";
             coreModule.getSymmetryModule = m => m.coreModule;
             coreModule.getValidOptions = () => getVariantSet(currentVariant).definitions;
 
-            mountModule = new ROTModelModule<ModuleROTank>(part, this, getRootTransform("ModularPart-MOUNT"), ModelOrientation.BOTTOM, nameof(currentMount), null, nameof(currentMountTexture), nameof(mountModulePersistentData));
+            mountModule = new ROLModelModule<ModuleROTank>(part, this, getRootTransform("ModularPart-MOUNT"), ModelOrientation.BOTTOM, nameof(currentMount), null, nameof(currentMountTexture), nameof(mountModulePersistentData));
             mountModule.name = "ModuleROTank-Mount";
             mountModule.getSymmetryModule = m => m.mountModule;
             mountModule.getValidOptions = () => mountDefs;
@@ -421,9 +397,9 @@ namespace ROTanks
             updateDimensions();
             updateAttachNodes(false);
             updateAvailableVariants();
-            ROTStockInterop.updatePartHighlighting(part);
+            ROLStockInterop.updatePartHighlighting(part);
         }
-        
+
         /// <summary>
         /// Initialize the UI controls, including default values, and specifying delegates for their 'onClick' methods.<para/>
         /// All UI based interaction code will be defined/run through these delegates.
@@ -435,18 +411,17 @@ namespace ROTanks
                 m.updateModulePositions();
                 m.updateDimensions();
                 m.updateAttachNodes(true);
-                m.updateFairing(true);
                 m.updateAvailableVariants();
                 m.updateDragCubes();
-                ROTModInterop.updateResourceVolume(m.part);
+                ROLModInterop.updateResourceVolume(m.part);
             };
 
             //set up the core variant UI control
-            string[] variantNames = ROTUtils.getNames(variantSets.Values, m => m.variantName);
-            this.updateUIChooseOptionControl(nameof(currentVariant), variantNames, variantNames, true, currentVariant);
+            string[] variantNames = ROLUtils.getNames(variantSets.Values, m => m.variantName);
+            this.ROLupdateUIChooseOptionControl(nameof(currentVariant), variantNames, variantNames, true, currentVariant);
             Fields[nameof(currentVariant)].guiActiveEditor = variantSets.Count > 1;
 
-            Fields[nameof(currentVariant)].uiControlEditor.onFieldChanged = (a, b) => 
+            Fields[nameof(currentVariant)].uiControlEditor.onFieldChanged = (a, b) =>
             {
                 //TODO find variant set for the currently enabled core model
                 //query the index from that variant set
@@ -458,7 +433,7 @@ namespace ROTanks
                 //and a reference to the model from same index out of the new set ([] call does validation internally for IAOOBE)
                 ModelDefinitionLayoutOptions newCoreDef = mdvs[previousIndex];
                 //now, call model-selected on the core model to update for the changes, including symmetry counterpart updating.
-                this.actionWithSymmetry(m => 
+                this.ROLactionWithSymmetry(m =>
                 {
                     m.currentVariant = currentVariant;
                     m.coreModule.modelSelected(newCoreDef.definition.name);
@@ -468,44 +443,44 @@ namespace ROTanks
 
             Fields[nameof(currentDiameter)].uiControlEditor.onFieldChanged = (a, b) =>
             {
-                this.actionWithSymmetry(m =>
+                this.ROLactionWithSymmetry(m =>
                 {
                     if (m != this) { m.currentDiameter = this.currentDiameter; }
                     modelChangedAction(m);
                     m.prevDiameter = m.currentDiameter;
                 });
-                ROTStockInterop.fireEditorUpdate();
+                ROLStockInterop.fireEditorUpdate();
             };
 
             Fields[nameof(currentVScale)].uiControlEditor.onFieldChanged = (a, b) =>
             {
-                this.actionWithSymmetry(m =>
+                this.ROLactionWithSymmetry(m =>
                 {
                     if (m != this) { m.currentVScale = this.currentVScale; }
                     modelChangedAction(m);
                 });
-                ROTStockInterop.fireEditorUpdate();
+                ROLStockInterop.fireEditorUpdate();
             };
 
             Fields[nameof(currentNose)].uiControlEditor.onFieldChanged = (a, b) =>
             {
                 noseModule.modelSelected(a, b);
-                this.actionWithSymmetry(modelChangedAction);
-                ROTStockInterop.fireEditorUpdate();
+                this.ROLactionWithSymmetry(modelChangedAction);
+                ROLStockInterop.fireEditorUpdate();
             };
 
             Fields[nameof(currentCore)].uiControlEditor.onFieldChanged = (a, b) =>
             {
                 coreModule.modelSelected(a, b);
-                this.actionWithSymmetry(modelChangedAction);
-                ROTStockInterop.fireEditorUpdate();
+                this.ROLactionWithSymmetry(modelChangedAction);
+                ROLStockInterop.fireEditorUpdate();
             };
 
             Fields[nameof(currentMount)].uiControlEditor.onFieldChanged = (a, b) =>
             {
                 mountModule.modelSelected(a, b);
-                this.actionWithSymmetry(modelChangedAction);
-                ROTStockInterop.fireEditorUpdate();
+                this.ROLactionWithSymmetry(modelChangedAction);
+                ROLStockInterop.fireEditorUpdate();
             };
 
             //------------------MODEL DIAMETER SWITCH UI INIT---------------------//
@@ -515,7 +490,7 @@ namespace ROTanks
             }
             else
             {
-                this.updateUIFloatEditControl(nameof(currentDiameter), minDiameter, maxDiameter, diameterLargeStep, diameterSmallStep, diameterSlideStep, true, currentDiameter);
+                this.ROLupdateUIFloatEditControl(nameof(currentDiameter), minDiameter, maxDiameter, diameterLargeStep, diameterSmallStep, diameterSlideStep, true, currentDiameter);
             }
             Fields[nameof(currentVScale)].guiActiveEditor = enableVScale;
 
@@ -528,8 +503,13 @@ namespace ROTanks
             {
                 GameEvents.onEditorShipModified.Add(new EventData<ShipConstruct>.OnEvent(onEditorVesselModified));
             }
+
+            // Force the Textures selection to show up to keep the PAW at the same size
+            Fields[nameof(currentNoseTexture)].guiActiveEditor = true;
+            Fields[nameof(currentCoreTexture)].guiActiveEditor = true;
+            Fields[nameof(currentMountTexture)].guiActiveEditor = true;
         }
-        
+
         /// <summary>
         /// Update the scale and position values for all currently configured models.  Does no validation, only updates positions.<para/>
         /// After calling this method, all models will be scaled and positioned according to their internal position/scale values and the orientations/offsets defined in the models.
@@ -573,17 +553,17 @@ namespace ROTanks
         {
             float noseMaxDiam, mountMaxDiam = 0.0f;
             noseMaxDiam = Math.Max(noseModule.moduleLowerDiameter, noseModule.moduleUpperDiameter);
-            ROTLog.debug("currentMount: " + currentMount);
+            ROLLog.debug("currentMount: " + currentMount);
             if (currentMount.Contains("Mount"))
             {
-                ROTLog.debug("currentMount: " + currentMount);
+                ROLLog.debug("currentMount: " + currentMount);
                 mountMaxDiam = mountModule.moduleUpperDiameter;
             }
             else
                 mountMaxDiam = Math.Max(mountModule.moduleLowerDiameter, mountModule.moduleUpperDiameter);
 
             totalTankLength = getTotalHeight();
-            ROTLog.debug("The Total Tank Length is: " + totalTankLength);
+            ROLLog.debug("The Total Tank Length is: " + totalTankLength);
             largestDiameter = Math.Max(currentDiameter, Math.Max(noseMaxDiam, mountMaxDiam));
         }
 
@@ -606,86 +586,34 @@ namespace ROTanks
             coreModule.updateAttachNodeBody(coreNodeNames, userInput);
             mountModule.updateAttachNodeBody(mountNodeNames, userInput);
 
-            //update the nose interstage node, using the node position as specified by the nose module's fairing offset parameter
-            // ModelModule<ModuleROTank> nodeModule = getUpperFairingModelModule();
-            // Vector3 pos = new Vector3(0, nodeModule.fairingBottom, 0);
-            float theCoreNode = 0.0f;
-            theCoreNode = coreModule.moduleHeight * 0.5f;
-            Vector3 pos = new Vector3(0, theCoreNode, 0);
-            ModuleROTSelectableNodes.updateNodePosition(part, noseInterstageNode, pos);
+            // Update the Nose Interstage Node
+            float y = noseModule.modulePosition + noseModule.moduleVerticalScale;
+            int nodeSize = Mathf.RoundToInt(coreModule.moduleDiameter) + 1;
+            Vector3 pos = new Vector3(0, y, 0);
+            ROLSelectableNodes.updateNodePosition(part, noseInterstageNode, pos);
             AttachNode noseInterstage = part.FindAttachNode(noseInterstageNode);
             if (noseInterstage != null)
             {
-                ROTAttachNodeUtils.updateAttachNodePosition(part, noseInterstage, pos, Vector3.up, userInput, 1);
+                ROLAttachNodeUtils.updateAttachNodePosition(part, noseInterstage, pos, Vector3.up, userInput, nodeSize);
             }
 
-            //update the nose interstage node, using the node position as specified by the nose module's fairing offset parameter
-            // nodeModule = getLowerFairingModelModule();
-            theCoreNode = -theCoreNode;
-            pos = new Vector3(0, theCoreNode, 0);
-            ModuleROTSelectableNodes.updateNodePosition(part, mountInterstageNode, pos);
+            // Update the Mount Interstage Node
+            y = mountModule.modulePosition + mountModule.moduleVerticalScale;
+            nodeSize = Mathf.RoundToInt(coreModule.moduleDiameter) + 1;
+            Vpos = new Vector3(0, y, 0);
+            ROLSelectableNodes.updateNodePosition(part, mountInterstageNode, pos);
             AttachNode mountInterstage = part.FindAttachNode(mountInterstageNode);
             if (mountInterstage != null)
             {
-                ROTAttachNodeUtils.updateAttachNodePosition(part, mountInterstage, pos, Vector3.down, userInput, 1);
+                ROLAttachNodeUtils.updateAttachNodePosition(part, mountInterstage, pos, Vector3.down, userInput, nodeSize);
             }
 
+
             //update surface attach node position, part position, and any surface attached children
-            //TODO -- how to determine how far to offset/move surface attached children?
             AttachNode surfaceNode = part.srfAttachNode;
             if (surfaceNode != null)
             {
                 coreModule.updateSurfaceAttachNode(surfaceNode, prevDiameter, userInput);
-            }
-        }
-        
-        /// <summary>
-        /// Update the current fairing modules (top, centra, and bottom) for the current model-module configuration (diameters, positions).
-        /// </summary>
-        /// <param name="userInput"></param>
-        private void updateFairing(bool userInput)
-        {
-            ModuleROTNodeFairing[] modules = part.GetComponents<ModuleROTNodeFairing>();
-            if (centralFairingIndex >= 0 && centralFairingIndex < modules.Length)
-            {
-                bool enabled = coreModule.fairingEnabled;
-                ModuleROTNodeFairing coreFairing = modules[centralFairingIndex];
-                float top = coreModule.fairingTop;
-                float bot = coreModule.fairingBottom;
-                ROTFairingUpdateData data = new ROTFairingUpdateData();
-                data.setTopY(top);
-                data.setTopRadius(currentDiameter * 0.5f);
-                data.setBottomY(bot);
-                data.setBottomRadius(currentDiameter * 0.5f);
-                data.setEnable(enabled);
-                coreFairing.updateExternal(data);
-            }
-            if (topFairingIndex >= 0 && topFairingIndex < modules.Length)
-            {
-                ROTModelModule<ModuleROTank> moduleForUpperFiaring = getUpperFairingModelModule();
-                bool enabled = moduleForUpperFiaring.fairingEnabled;
-                ModuleROTNodeFairing topFairing = modules[topFairingIndex];
-                float topFairingBottomY = moduleForUpperFiaring.fairingBottom;
-                ROTFairingUpdateData data = new ROTFairingUpdateData();
-                data.setTopY(getPartTopY());
-                data.setBottomY(topFairingBottomY);
-                data.setBottomRadius(currentDiameter * 0.5f);
-                data.setEnable(enabled);
-                if (userInput) { data.setTopRadius(currentDiameter * 0.5f); }
-                topFairing.updateExternal(data);
-            }
-            if (bottomFairingIndex >= 0 && bottomFairingIndex < modules.Length)
-            {
-                ROTModelModule<ModuleROTank> moduleForLowerFairing = getLowerFairingModelModule();
-                bool enabled = moduleForLowerFairing.fairingEnabled;
-                ModuleROTNodeFairing bottomFairing = modules[bottomFairingIndex];
-                float bottomFairingTopY = moduleForLowerFairing.fairingTop;
-                ROTFairingUpdateData data = new ROTFairingUpdateData();
-                data.setTopRadius(currentDiameter * 0.5f);
-                data.setTopY(bottomFairingTopY);
-                data.setEnable(enabled);
-                if (userInput) { data.setBottomRadius(currentDiameter * 0.5f); }
-                bottomFairing.updateExternal(data);
             }
         }
 
@@ -697,10 +625,10 @@ namespace ROTanks
         {
             float totalHeight = noseModule.moduleHeight;
             totalHeight += mountModule.moduleHeight;
-            ROTLog.debug("currentCore: " + currentCore);
+            ROLLog.debug("currentCore: " + currentCore);
             if (currentCore.Contains("Booster"))
             {
-                ROTLog.debug("currentCore: " + currentCore);
+                ROLLog.debug("currentCore: " + currentCore);
                 totalHeight += coreModule.moduleActualHeight;
             }
             else
@@ -715,28 +643,6 @@ namespace ROTanks
         private float getPartTopY()
         {
             return getTotalHeight() * 0.5f;
-        }
-
-        /// <summary>
-        /// Return the ModelModule slot responsible for upper attach point of lower fairing module
-        /// </summary>
-        /// <returns></returns>
-        private ROTModelModule<ModuleROTank> getLowerFairingModelModule()
-        {
-            float coreBaseDiam = coreModule.moduleDiameter;
-            if (coreModule.moduleLowerDiameter < coreBaseDiam) { return coreModule; }
-            return mountModule;
-        }
-
-        /// <summary>
-        /// Return the ModelModule slot responsible for lower attach point of the upper fairing module
-        /// </summary>
-        /// <returns></returns>
-        private ROTModelModule<ModuleROTank> getUpperFairingModelModule()
-        {
-            float coreBaseDiam = coreModule.moduleDiameter;
-            if (coreModule.moduleUpperDiameter < coreBaseDiam) { return coreModule; }
-            return noseModule;
         }
 
         /// <summary>
@@ -755,9 +661,9 @@ namespace ROTanks
         /// </summary>
         private void updateDragCubes()
         {
-            ROTModInterop.onPartGeometryUpdate(part, true);
+            ROLModInterop.onPartGeometryUpdate(part, true);
         }
-        
+
         /// <summary>
         /// Return the root transform for the specified name.  If does not exist, will create it and parent it to the parts' 'model' transform.
         /// </summary>
@@ -766,14 +672,14 @@ namespace ROTanks
         /// <returns></returns>
         private Transform getRootTransform(string name)
         {
-            Transform root = part.transform.FindRecursive(name);
+            Transform root = part.transform.ROLFindRecursive(name);
             if (root != null)
             {
                 GameObject.DestroyImmediate(root.gameObject);
                 root = null;
             }
             root = new GameObject(name).transform;
-            root.NestToParent(part.transform.FindRecursive("model"));
+            root.NestToParent(part.transform.ROLFindRecursive("model"));
             return root;
         }
 
@@ -782,7 +688,7 @@ namespace ROTanks
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        private ROTModelModule<ModuleROTank> getModuleByName(string name)
+        private ROLModelModule<ModuleROTank> getModuleByName(string name)
         {
             switch (name)
             {
@@ -811,7 +717,7 @@ namespace ROTanks
         public readonly string variantName;
 
         public ModelDefinitionLayoutOptions[] definitions = new ModelDefinitionLayoutOptions[0];
-        
+
         public ModelDefinitionLayoutOptions this[int index]
         {
             get

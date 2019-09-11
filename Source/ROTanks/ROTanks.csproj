@@ -36,6 +36,11 @@
       <HintPath>..\..\..\..\KSP DLL\1.6.1\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="ROLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\KSP DLL\1.6.1\ROLib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="TexturesUnlimited, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -55,31 +60,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ModelDef\ROTFairingContainer.cs" />
-    <Compile Include="ModelDef\ROTFairingData.cs" />
-    <Compile Include="ModelDef\ROTMeshBuilder.cs" />
-    <Compile Include="ModelDef\ROTMeshGenerators.cs" />
-    <Compile Include="ModelDef\ROTModelLayout.cs" />
-    <Compile Include="ModelDef\ROTModelModule.cs" />
-    <Compile Include="ModelDef\ROTModelData.cs" />
-    <Compile Include="ModelDef\ROTModelDefinition.cs" />
     <Compile Include="Modules\ModuleROTProbe.cs" />
-    <Compile Include="Modules\ModuleROTSelectableNodes.cs" />
-    <Compile Include="Modules\ModuleROTNodeFairing.cs" />
-    <Compile Include="Modules\ModuleROTAirstreamShield.cs" />
-    <Compile Include="Modules\ModuleROTFlagDecal.cs" />
-    <Compile Include="Modules\ModuleROTCollisionHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Modules\ModuleROTank.cs" />
-    <Compile Include="Utils\ROTInterfaces.cs" />
-    <Compile Include="Utils\ROTLog.cs" />
-    <Compile Include="Utils\ROTUtils.cs" />
-    <Compile Include="Utils\ROTExtensions.cs" />
-    <Compile Include="Utils\ROTAttachNodeUtils.cs" />
-    <Compile Include="Utils\ROTGameSettings.cs" />
-    <Compile Include="Utils\ROTModInterop.cs" />
-    <Compile Include="Utils\ROTStockInterop.cs" />
-    <Compile Include="Utils\ROTConfigNodeUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
