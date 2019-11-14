@@ -13,7 +13,7 @@ namespace ROTanks
     /// PartModule that manages multiple models/meshes and accompanying features for model switching - resources, modules, textures, recoloring.<para/>
     /// Includes 3 stack-mounted modules.  All modules support model-switching, texture-switching, recoloring.
     /// </summary>
-    public class ModuleROTank : PartModule, IContainerVolumeContributor
+    public class ModuleROTank : PartModule, IRecolorable, IContainerVolumeContributor
     {
         #region KSPFields
 
@@ -568,7 +568,7 @@ namespace ROTanks
         }
 
         /// <summary>
-        /// Update the attach nodes for the current model-module configuration. 
+        /// Update the attach nodes for the current model-module configuration.
         /// The 'nose' module is responsible for updating of upper attach nodes, while the 'mount' module is responsible for lower attach nodes.
         /// Also includes updating of 'interstage' nose/mount attach nodes.
         /// Also includes updating of surface-attach node position.
@@ -600,7 +600,7 @@ namespace ROTanks
             // Update the Mount Interstage Node
             y = mountModule.modulePosition + mountModule.moduleVerticalScale;
             nodeSize = Mathf.RoundToInt(coreModule.moduleDiameter) + 1;
-            Vpos = new Vector3(0, y, 0);
+            pos = new Vector3(0, y, 0);
             ROLSelectableNodes.updateNodePosition(part, mountInterstageNode, pos);
             AttachNode mountInterstage = part.FindAttachNode(mountInterstageNode);
             if (mountInterstage != null)
