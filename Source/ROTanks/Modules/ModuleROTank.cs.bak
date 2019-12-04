@@ -13,7 +13,7 @@ namespace ROTanks
     /// PartModule that manages multiple models/meshes and accompanying features for model switching - resources, modules, textures, recoloring.<para/>
     /// Includes 3 stack-mounted modules.  All modules support model-switching, texture-switching, recoloring.
     /// </summary>
-    public class ModuleROTank : PartModule, IRecolorable, IContainerVolumeContributor
+    public class ModuleROTank : PartModule, IPartCostModifier, IPartMassModifier, IRecolorable, IContainerVolumeContributor
     {
         #region KSPFields
 
@@ -36,7 +36,16 @@ namespace ROTanks
         public float volumeScalingPower = 3f;
 
         [KSPField]
+        public float massScalingPower = 3f;
+
+        [KSPField]
         public bool enableVScale = true;
+
+        [KSPField]
+        public bool scaleMass = false;
+
+        [KSPField]
+        public bool scaleCost = false;
 
         [KSPField]
         public int coreContainerIndex = 0;
@@ -157,6 +166,16 @@ namespace ROTanks
         private bool initialized = false;
 
         /// <summary>
+        /// The adjusted modified mass for this part.
+        /// </summary>
+        private float modifiedMass = -1;
+
+        /// <summary>
+        /// The adjusted modified cost for this part.
+        /// </summary>
+        private float modifiedCost = -1;
+
+        /// <summary>
         /// Previous diameter value, used for surface attach position updates.
         /// </summary>
         private float prevDiameter = -1;
@@ -244,6 +263,26 @@ namespace ROTanks
         {
             //update available variants for attach node changes
             updateAvailableVariants();
+        }
+
+        // IPartMass/CostModifier override
+        public ModifierChangeWhen GetModuleMassChangeWhen() { return ModifierChangeWhen.CONSTANTLY; }
+
+        // IPartMass/CostModifier override
+        public ModifierChangeWhen GetModuleCostChangeWhen() { return ModifierChangeWhen.CONSTANTLY; }
+
+        // IPartMass/CostModifier override
+        public float GetModuleMass(float defaultMass, ModifierStagingSituation sit)
+        {
+            if (modifiedMass == -1) { return 0; }
+            return -defaultMass + modifiedMass;
+        }
+
+        // IPartMass/CostModifier override
+        public float GetModuleCost(float defaultCost, ModifierStagingSituation sit)
+        {
+            if (modifiedCost == -1) { return 0; }
+            return -defaultCost + modifiedCost;
         }
 
         //IRecolorable override
@@ -397,6 +436,14 @@ namespace ROTanks
             updateDimensions();
             updateAttachNodes(false);
             updateAvailableVariants();
+            if (scaleMass)
+            {
+                updateMass();
+            }
+            if (scaleCost)
+            {
+                updateCost();
+            }
             ROLStockInterop.updatePartHighlighting(part);
         }
 
@@ -413,6 +460,14 @@ namespace ROTanks
                 m.updateAttachNodes(true);
                 m.updateAvailableVariants();
                 m.updateDragCubes();
+                if (scaleMass)
+                {
+                    m.updateMass();
+                }
+                if (scaleCost)
+                {
+                    m.updateCost();
+                }
                 ROLModInterop.updateResourceVolume(m.part);
             };
 
@@ -544,6 +599,26 @@ namespace ROTanks
             noseModule.updateModelMeshes();
             coreModule.updateModelMeshes();
             mountModule.updateModelMeshes();
+        }
+
+        /// <summary>
+        /// Update the cached modifiedMass field values.  Used with stock mass modifier interface.<para/>
+        /// </summary>
+        private void updateMass()
+        {
+            modifiedMass = coreModule.moduleMass;
+            modifiedMass += noseModule.moduleMass;
+            modifiedMass += mountModule.moduleMass;
+        }
+
+        /// <summary>
+        /// Update the cached modifiedCost field values.  Used with stock cost modifier interface.<para/>
+        /// </summary>
+        private void updateCost()
+        {
+            modifiedCost = coreModule.moduleCost;
+            modifiedCost += noseModule.moduleCost;
+            modifiedCost += mountModule.moduleCost;
         }
 
         /// <summary>
