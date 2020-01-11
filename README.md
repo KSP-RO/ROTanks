@@ -4,6 +4,7 @@ This is a mod that aims to create the flexibility and beauty of the SSTU tanks, 
 
 ## Dependencies
 * Textures Unlimited
+* ROLibrary <https://github.com/KSP-RO/ROLibrary>
 
 ## Assets Credit
 * Cylindrical Tanks
