@@ -273,7 +273,7 @@ ROL_MODEL
 ROL_MODEL
 {
 	name = 8.0x-Cryo
-	modelName = ROTanks/Assets/SC-TANK-C-8-0
+	modelName = ROTanks/Assets/Pap/80-TANK
 	orientation = CENTRAL
 	style = Normal-Tank
 	volume = 756.7638
@@ -284,4 +284,20 @@ ROL_MODEL
     cost = 0
     upperDiameter = 5
     lowerDiameter = 5
+}
+
+//ROL_MODEL
+//{
+//	name = 8.0x-Cryo
+//	modelName = ROTanks/Assets/SC-TANK-C-8-0
+//	orientation = CENTRAL
+//	style = Normal-Tank
+//	volume = 756.7638
+//	height = 40
+//	diameter = 5
+//   minVerticalScale = 0.01
+//	maxVerticalScale = 20
+//    cost = 0
+//    upperDiameter = 5
+//    lowerDiameter = 5
 }
