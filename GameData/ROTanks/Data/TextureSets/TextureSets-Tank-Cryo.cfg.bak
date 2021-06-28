@@ -401,6 +401,58 @@ KSP_TEXTURE_SET
     }
 }
 
+KSP_TEXTURE_SET
+{
+    name = ROT-Cryo-Pap
+    title = PAP
+    recolorable = true
+    MATERIAL
+    {
+        texture = _MainTex, ROTanks/Assets/SC-TANKS-DIFF-WHITE-P
+        texture = _BumpMap, ROTanks/Assets/SC-TANKS-NRM-P
+        texture = _MetallicGlossMap, ROTanks/Assets/SC-TANKS-MET-SILVER
+        texture = _AOMap, ROTanks/Assets/SC-TANKS-AO-PLAIN
+        texture = _MaskTex, ROTanks/Assets/Masks/80-TANK
+        shader = TU/Metallic
+		keyword = TU_RECOLOR
+		vector = _DiffuseNorm,0.5,0.5,0.5
+		vector = _MetalNorm,0.5,0.5,0.5
+		vector = _SmoothnessNorm,0.5,0.5,0.5
+    }
+    COLORS
+    {
+        mainColor = silver
+        secondColor = gold
+        detailColor = steel
+    }
+}
+
+KSP_TEXTURE_SET
+{
+    name = ROT-Cryo-Pap2
+    title = PAP2
+    recolorable = true
+    MATERIAL
+    {
+        texture = _MainTex, ROTanks/Assets/SC-TANKS-DIFF-WHITE-P
+        texture = _BumpMap, ROTanks/Assets/SC-TANKS-NRM-P
+        texture = _MetallicGlossMap, ROTanks/Assets/SC-TANKS-MET-SILVER
+        texture = _AOMap, ROTanks/Assets/SC-TANKS-AO-PLAIN
+        texture = _MaskTex, ROTanks/Assets/Masks/80-TANK-2
+        shader = TU/Metallic
+		keyword = TU_RECOLOR
+		vector = _DiffuseNorm,0.5,0.5,0.5
+		vector = _MetalNorm,0.5,0.5,0.5
+		vector = _SmoothnessNorm,0.5,0.5,0.5
+    }
+    COLORS
+    {
+        mainColor = silver
+        secondColor = gold
+        detailColor = steel
+    }
+}
+
 @ROL_MODEL[0.25x-Cryo|0.5x-Cryo|0.75x-Cryo|1.0x-Cryo|1.5x-Cryo|2.0x-Cryo|2.5x-Cryo|3.0x-Cryo|3.5x-Cryo|4.0x-Cryo|4.5x-Cryo|5.0x-Cryo|5.5x-Cryo|6.0x-Cryo|6.5x-Cryo|7.0x-Cryo|7.5x-Cryo|8.0x-Cryo|0.25x-Kero|0.25x-Hydro|0.75x-Kero|0.75x-Hydro]:FOR[ROTanks]
 {    
     //standard stripe patterns, with plain NRM map
@@ -415,4 +467,11 @@ KSP_TEXTURE_SET
     textureSet = ROT-Cryo-Orange-Stringers
     textureSet = ROT-Cryo-Gold
     textureSet = ROT-Cryo-Silver
+}
+
+@ROL_MODEL[8.0x-Cryo]:FOR[ROTanks]
+{    
+    //standard stripe patterns, with plain NRM map
+    textureSet = ROT-Cryo-Pap
+    textureSet = ROT-Cryo-Pap2
 }
