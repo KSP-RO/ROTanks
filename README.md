@@ -7,14 +7,61 @@ This is a mod that aims to create the flexibility and beauty of the SSTU tanks, 
 * ROLibrary <https://github.com/KSP-RO/ROLibrary>
 
 ## Assets Credit
-* Cylindrical Tanks
-  * All models and assets from Shadowmage45 (SSTU)
+* Shadowmage45 (SSTU)
+  * All Assets and Models unless otherwise noted
   
-* Spherical Tanks
-  * All models and assets from Nertea (CryoTanks)
+* Frizzank (FASA)
+  * Atlas Tank
+  * Atlas Skirt
+  * Atlas Mount (modified by Pap)
+  * Titan 2 Interstage
   
-* Probe Cores
-  * 7 probes from akron (Coatl Aerospace)
-  * 10 probes from CobaltWolf (Bluedog Design)
-  * 2 probes from RLA Reborn
+* Cobalt (Bluedog Design Bureau)
+  * LDC Titan Interstage Decoupler
+  * Titan 2 Decoupler
+  * Mounts
+    * LDC Single
+	* LDC Dual
+	* LDC Quad
+	* LDC x7
+	* LDC Adapter
+	* Centaur-D
+	* Centaur-V
+	* Saturn SII 7x
+	* Saturn SII
+  * Probes
+    * Diapason
+	* Explorer 33
+	* Helios
+	* Tri-Prism
+	* OGO
+	* OSO
+	* Ranger
+	* Sputnik 3
+	* Venera
   
+* Beale (Tantares)
+  * Interstage Trusses
+  
+* Katniss
+  * MS-II Interstage
+  * MS-II-2 Interstage
+  * MS-V Interstage
+  * STS Booster Interstage
+  * STS Interstage
+  * S-IVB Interstage
+
+* Hephaistos
+  * Vulcan Mount
+  
+* Akron (Coatl)
+  * Probes
+    * Rectangle Tall
+	* Square
+	* Hexagon
+	* Pioneer 10
+	* Voyager
+	* STEREO
+	
+* Nertea (CryoTanks)
+  * Inline Sphereical Tanks
