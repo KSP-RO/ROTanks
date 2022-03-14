@@ -2,31 +2,31 @@
     "NAME"     : "ROTanks",
     "URL"      : "https://raw.githubusercontent.com/KSP-RO/ROTanks/master/GameData/ROTanks/ROTanks.version",
     "DOWNLOAD" : "https://github.com/KSP-RO/ROTanks/releases",
-    "HOMEPAGE"  : "https://github.com/KSP-RO/ROTanks/",
+    "HOMEPAGE" : "https://github.com/KSP-RO/ROTanks/",
     "GITHUB" : {
         "USERNAME"          : "KSP-RO",
         "REPOSITORY"        : "ROTanks",
         "ALLOW_PRE_RELEASE" : false
     },
-	"VERSION": {
-		"MAJOR": "2",
-		"MINOR": "5",
-		"PATCH": "1",
-		"BUILD": "0"
-	},
+    "VERSION": {
+        "MAJOR": "2",
+        "MINOR": "5",
+        "PATCH": "1",
+        "BUILD": "0"
+    },
     "KSP_VERSION" : {
         "MAJOR": "1",
         "MINOR": "8",
         "PATCH": "1"
     },
-	"KSP_VERSION_MIN": {
-		"MAJOR": "1",
-		"MINOR": "8",
-		"PATCH": "1"
-	},
-	"KSP_VERSION_MAX": {
-		"MAJOR": "1",
-		"MINOR": "11",
-		"PATCH": "99"
-	}
+    "KSP_VERSION_MIN": {
+        "MAJOR": "1",
+        "MINOR": "8",
+        "PATCH": "1"
+    },
+    "KSP_VERSION_MAX": {
+        "MAJOR": "1",
+        "MINOR": "11",
+        "PATCH": "99"
+    }
 }
