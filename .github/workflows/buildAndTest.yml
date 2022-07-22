@@ -47,7 +47,7 @@ jobs:
           zip -r ROTanks-${{ github.event.release.tag_name }}.zip GameData README.md
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: ROTanks
-          path: ${{ steps.assemble-release.outputs.release-dir }}
+          path: ${{ steps.assemble-release.outputs.release-dir }}/ROTanks-${{ github.event.release.tag_name }}.zip
