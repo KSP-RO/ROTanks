@@ -6,7 +6,7 @@ name: build
 on:
   # Triggers the workflow on push or pull request events for master and dev branches
   push:
-    branches: [ master, dev ]
+    branches: [ master, dev, feature/addBuildActions ]
   pull_request:
     branches: [ master, dev ]
 
