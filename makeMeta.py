@@ -65,6 +65,5 @@ avc = {
 		"PATCH": "99"
 	}
 }
-
 with open("ROTanks.version", "w") as f:
 	f.write(json.dumps(avc, indent=4))
