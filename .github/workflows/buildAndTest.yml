@@ -43,6 +43,8 @@ jobs:
           echo "::set-output name=release-dir::${RELEASE_DIR}"
           cp -v -R "${GITHUB_WORKSPACE}/GameData" "${RELEASE_DIR}"
           cp -v "${GITHUB_WORKSPACE}/README.md" "${RELEASE_DIR}"
+          cd ${RELEASE_DIR}
+          zip -r ROTanks-${{ github.event.release.tag_name }}.zip GameData README.md
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
