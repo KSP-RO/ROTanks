@@ -30,12 +30,13 @@ if len(version) == 4:
 	build = int(version[3])
 # create AVC .version file
 avc = {
-	"NAME" : "ROTanks",
-	"URL" : "https://raw.githubusercontent.com/KSPRO/ROTanks/master/GameData/ROTanks.version",
-	"DOWNLOAD" : "https://github.com/KSPRO/ROTanks/releases",
+    "NAME"     : "ROTanks",
+    "URL"      : "https://raw.githubusercontent.com/KSP-RO/ROTanks/master/GameData/ROTanks/ROTanks.version",
+    "DOWNLOAD" : "https://github.com/KSP-RO/ROTanks/releases",
+    "HOMEPAGE" : "https://github.com/KSP-RO/ROTanks/",
 	"GITHUB":
 	{
-		"USERNAME":"KSPRO",
+		"USERNAME":"KSP-RO",
 		"REPOSITORY":"ROTanks",
 		"ALLOW_PRE_RELEASE": False
 	},
